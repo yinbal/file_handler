@@ -30,7 +30,6 @@ open(FilePath) -> open(FilePath, ?DEFAULT_MAP).
   {ok, #state{}} | {error, any()}.
 open(FilePath, #{chunk_size := ChunkSize})
   when is_integer(ChunkSize), ChunkSize > 0 ->
-  io:format(user,"*** file: ~p, Chunk Size:~p~n",[FilePath, ChunkSize]),
   case file:open(FilePath, [binary]) of
     {ok, FileDescriptor} ->
       {ok, #state{filename = FilePath,
@@ -51,12 +50,13 @@ read_chunk(#state{ file_descriptor = Source,
 read_line(#state{file_descriptor = undefined} = State) -> {eof, State};
 read_line(#state{tail = Tail} = State) ->
   case binary:split(Tail, ?NEWLINE) of
-    [Line, Rest] -> {ok, State#state{tail = Rest}, Line};
+    [Line, Rest] ->
+      {ok, State#state{tail = Rest}, Line};
     [_] ->
       case read_chunk(State) of
         {ok, State1, Chunk} ->
           read_line(State1#state{ tail = <<Tail/binary, Chunk/binary >> });
-          {eof, State1, _} -> {eof, State1, <<>>}
+        {eof, State1, _} -> {eof, State1, <<>>}
       end
   end.
 

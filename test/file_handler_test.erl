@@ -6,7 +6,7 @@
 
 file_handler_test_() ->
   {Status, State} = file_handler:open("test/feed_file_handler_test.txt",
-                                       #{chunk_size => ?SCAN_CHUNK_SIZE}),
+                                      #{chunk_size => ?SCAN_CHUNK_SIZE}),
   io:format(user, "Open Status: ~p~n", [Status]),
   case Status of
     ok ->
